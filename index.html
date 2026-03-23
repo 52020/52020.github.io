@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>亲亲小黎宝宝 | 月经周期记录</title>
+    <style>
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* 页面主体样式 - 更细腻的渐变背景 + 噪点纹理 */
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 25%, #fec8d8 50%, #fcb69f 75%, #ffecd2 100%);
+            background-size: 400% 400%;
+            animation: gradientAnimation 20s ease infinite;
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+            position: relative;
+        }
+
+        /* 背景噪点纹理 - 增加质感 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.6;
+            z-index: -1;
+        }
+
+        /* 背景渐变动画 - 更缓慢自然 */
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 容器样式 - 增强玻璃拟态 + 精致阴影 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            box-shadow: 
+                0 10px 40px rgba(255, 107, 107, 0.12),
+                0 1px 3px rgba(0, 0, 0, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            padding: 3.5rem;
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 容器顶部装饰条 */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #ff6b6b, #ff8e8e, #ffb7b7, #ff8e8e, #ff6b6b);
+            border-radius: 24px 24px 0 0;
+        }
+
+        /* 标题样式 - 增强立体感和精致度 */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 122, 122, 0.15);
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #ff8e8e, transparent);
+        }
+
+        .header h1 {
+            background: linear-gradient(90deg, #d63384, #ff4d6d, #ff758f);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+            text-shadow: 0 4px 8px rgba(255, 107, 107, 0.12);
+            position: relative;
+        }
+
+        /* 标题文字发光效果 */
+        .header h1::after {
+            content: attr(text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: linear-gradient(90deg, #ff9a9e, #fec8d8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: blur(8px);
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        .header p {
+            color: #7d5a5a;
+            font-size: 1.2rem;
+            opacity: 0.9;
+            letter-spacing: 0.5px;
+        }
+
+        /* 月份网格布局 - 优化间距和响应式 */
+        .period-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 2rem;
+        }
+
+        /* 月份卡片样式 - 增强层次感和精致度 */
+        .month-card {
+            background: linear-gradient(120deg, #fff0f3 0%, #ffe8ec 50%, #fff5f7 100%);
+            border-radius: 18px;
+            padding: 2rem 1.8rem;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 159, 159, 0.15);
+            box-shadow: 
+                0 4px 15px rgba(255, 107, 107, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+
+        /* 卡片装饰元素 - 更精致 */
+        .month-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #ff6b6b, #ff8e8e, #ffa8a8);
+        }
+
+        .month-card::after {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 107, 107, 0.06);
+            border-radius: 50%;
+            filter: blur(15px);
+        }
+
+        /* 卡片内部装饰点 */
+        .month-card .decor-dot {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 6px;
+            height: 6px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.4);
+        }
+
+        /* 卡片悬停效果 - 更丝滑的动画 */
+        .month-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 
+                0 20px 40px rgba(255, 107, 107, 0.18),
+                0 5px 15px rgba(255, 107, 107, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.95);
+            background: linear-gradient(120deg, #fff5f8 0%, #fff0f5 100%);
+        }
+
+        /* 月份标题 - 增强视觉效果 */
+        .month-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            background: linear-gradient(90deg, #d63384, #ff4d6d);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .month-title::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.4);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 日期信息 - 更精致的排版 */
+        .period-date {
+            font-size: 1.3rem;
+            color: #6a4f55;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            padding-left: 0.8rem;
+            font-weight: 400;
+        }
+
+        .period-date::before {
+            content: '📅';
+            font-size: 1.2rem;
+            filter: drop-shadow(0 2px 3px rgba(255, 107, 107, 0.1));
+        }
+
+        .period-date span {
+            font-weight: 700;
+            color: #d63384;
+            font-size: 1.4rem;
+            position: relative;
+        }
+
+        /* 日期数字装饰 */
+        .period-date span::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #ff6b6b, #ff8e8e);
+            border-radius: 1px;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .month-card:hover .period-date span::after {
+            transform: scaleX(1);
+        }
+
+        /* 响应式设计优化 - 更细致的适配 */
+        @media (max-width: 768px) {
+            body {
+                padding: 1.5rem;
+            }
+            
+            .container {
+                padding: 2rem 1.8rem;
+                border-radius: 20px;
+            }
+            
+            .period-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .month-card {
+                padding: 1.8rem 1.5rem;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .period-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* 平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 text="亲亲小黎宝宝">亲亲小黎宝宝</h1>
+            <p>月经到来时间记录</p>
+        </div>
+        
+        <!-- 统一的记录容器 -->
+        <div class="period-grid" id="periodRecords">
+            <!-- 月份卡片将通过JS动态生成 -->
+        </div>
+    </div>
+
+    <script>
+        // 定义固定的日期数据（原始顺序）
+        const monthData = [
+            { year: 2025, month: '10月', day: 5 },
+            { year: 2025, month: '11月', day: 2 },
+            { year: 2025, month: '12月', day: 31 },
+            { year: 2026, month: '1月', day: 27 },
+            { year: 2026, month: '2月', day: 28 }
+        ];
+
+        // 渲染月份卡片（倒序渲染）
+        function renderPeriodCards() {
+            const container = document.getElementById('periodRecords');
+            if (!container) return;
+
+            // 对数据进行倒序处理（最新的在最前面）
+            const reversedMonthData = monthData.reverse();
+            
+            reversedMonthData.forEach(item => {
+                // 创建月份卡片元素
+                const card = document.createElement('div');
+                card.className = 'month-card';
+                
+                // 构建卡片内容（增加装饰点）
+                card.innerHTML = `
+                    <div class="month-title">${item.year}年${item.month}</div>
+                    <div class="period-date">
+                        到来时间：<span>${item.day}日</span>
+                    </div>
+                    <div class="decor-dot"></div>
+                `;
+                
+                // 添加到统一容器中
+                container.appendChild(card);
+            });
+        }
+
+        // 页面加载完成后执行
+        window.addEventListener('DOMContentLoaded', renderPeriodCards);
+    </script>
+</body>
+</html>
