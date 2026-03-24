@@ -55,7 +55,7 @@
 
         .header {
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             border-bottom: 1px solid rgba(255, 122, 122, 0.15);
             padding-bottom: 1.5rem;
         }
@@ -74,6 +74,108 @@
             font-size: 1.2rem;
         }
 
+        /* 在一起天数卡片（简化版） */
+        .together-card {
+            background: linear-gradient(135deg, #fff5f7 0%, #ffeef2 100%);
+            border-radius: 32px;
+            padding: 1.6rem 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 140, 160, 0.4);
+            box-shadow: 0 12px 28px rgba(214, 51, 132, 0.12);
+            transition: transform 0.2s ease;
+            backdrop-filter: blur(2px);
+        }
+        .together-card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 16px 32px rgba(214, 51, 132, 0.2);
+        }
+        .together-icon {
+            font-size: 2.4rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 6px;
+        }
+        .together-days {
+            font-size: 3.2rem;
+            font-weight: 800;
+            background: linear-gradient(120deg, #d63384, #ff8c5a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+            margin: 0.3rem 0;
+        }
+        .together-label {
+            font-size: 1.2rem;
+            color: #b45f7a;
+            letter-spacing: 2px;
+            font-weight: 500;
+        }
+        /* 每日情话卡片 */
+        .love-quote-card {
+            background: rgba(255, 248, 245, 0.98);
+            border-radius: 28px;
+            padding: 1.6rem 1.8rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 140, 160, 0.3);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+        .quote-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 1.2rem;
+        }
+        .quote-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            background: linear-gradient(90deg, #d63384, #ff8a7a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .refresh-quote {
+            background: #ffdce3;
+            border: none;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            color: #b34766;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .refresh-quote:hover {
+            background: #ffb7c5;
+            color: white;
+        }
+        .quote-content {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            color: #4d2e38;
+            text-align: center;
+            padding: 1rem 0.5rem;
+            font-style: italic;
+            background: rgba(255, 235, 240, 0.6);
+            border-radius: 48px;
+            margin: 0.2rem 0;
+            word-break: break-word;
+        }
+        .quote-footer {
+            text-align: right;
+            font-size: 0.75rem;
+            color: #c2879b;
+            margin-top: 0.8rem;
+        }
         .period-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -167,7 +269,7 @@
             color: #b35d7a;
         }
 
-        /* 侧边悬浮音乐按钮 - 小巧不挡内容 */
+        /* 侧边悬浮音乐按钮 */
         .music-float-btn {
             position: fixed;
             bottom: 28px;
@@ -199,10 +301,8 @@
         .music-icon-symbol {
             font-size: 28px;
             filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
-            transition: transform 0.1s;
         }
 
-        /* 脉冲光晕，表示正在播放 */
         @keyframes gentlePulse {
             0% { box-shadow: 0 0 0 0 rgba(255, 100, 130, 0.5); }
             70% { box-shadow: 0 0 0 10px rgba(255, 100, 130, 0); }
@@ -255,6 +355,9 @@
                 height: 50px;
             }
             .music-icon-symbol { font-size: 24px; }
+            .together-days { font-size: 2.5rem; }
+            .together-card { padding: 1.2rem; }
+            .quote-content { font-size: 1rem; }
         }
     </style>
 </head>
@@ -264,6 +367,28 @@
             <h1>亲亲小黎宝宝</h1>
             <p>月经周期记录</p>
         </div>
+
+        <!-- 🌸 在一起天数卡片（已去掉多余文字） -->
+        <div class="together-card" id="togetherCard">
+            <div class="together-icon">💗💖💗</div>
+            <div class="together-days" id="loveDaysDisplay">计算中...</div>
+            <div class="together-label">我们在一起的日子</div>
+        </div>
+
+        <!-- 💌 每日情话模块（联网API + 本地备用） -->
+        <div class="love-quote-card" id="loveQuoteCard">
+            <div class="quote-header">
+                <div class="quote-title">
+                    <span>💌</span> 每日情话
+                </div>
+                
+            </div>
+            <div class="quote-content" id="quoteContent">
+                正在为你准备一句甜甜的话...
+            </div>
+            
+        </div>
+
         <div class="period-grid" id="periodRecords"></div>
     </div>
 
@@ -281,7 +406,7 @@
         </div>
     </div>
 
-    <!-- 侧边悬浮音乐按钮 (无文字提示，无曲目标识，仅控制播放/暂停) -->
+    <!-- 侧边悬浮音乐按钮 -->
     <div class="music-float-btn" id="musicFloatBtn">
         <span class="music-icon-symbol" id="musicIcon">🎵</span>
     </div>
@@ -314,7 +439,132 @@
         }
         renderCards();
 
-        // ======================= 浮动文字 (不变) =======================
+        // ======================= 💖 在一起天数计算 (从2024年3月6日) =======================
+        function updateLoveDays() {
+            const startDate = new Date(2024, 2, 6); // 2024年3月6日
+            const today = new Date();
+            const startUTC = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+            const todayUTC = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+            const diffTime = todayUTC - startUTC;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const displayElement = document.getElementById('loveDaysDisplay');
+            if (displayElement) {
+                if (diffDays >= 0) {
+                    displayElement.innerHTML = `${diffDays} <span style="font-size:1.6rem;">天</span>`;
+                } else {
+                    displayElement.innerHTML = `❤️ 刚刚相遇 ❤️`;
+                }
+            }
+        }
+        updateLoveDays();
+        setInterval(updateLoveDays, 60000); // 每分钟更新，跨日后自动变化
+
+        // ======================= 每日情话模块 (联网API + 本地备用) =======================
+        // 本地情话库（API失败时使用）
+        const localLoveMessages = [
+            "你是我藏在心底的欢喜，也是我明目张胆的偏爱。",
+            "想和你一起，从清晨到日暮，从心动到古稀。",
+            "所有的温柔眷恋，都是对你情有独钟。",
+            "遇见你，是我所有浪漫故事的开始。",
+            "你的一颦一笑，足以点亮我的整个世界。",
+            "想把世界上最好的都给你，却发现最好的就是你。",
+            "我贪恋的人间烟火，不偏不倚，全都是你。",
+            "你是我的半截诗，不许别人更改一个字。",
+            "喜欢你，像风吹了八千里，不问归期。",
+            "世界很大，我的心却很小，刚好装下一个你。",
+            "想和你一起做很多很多小事，把余生填满。",
+            "你的名字，是我读过最短的情书。",
+            "春来夏往，秋收冬藏，我们来日方长。",
+            "星河滚滚，你是人间理想。",
+            "你眼里有星河闪烁，值得我半生蹉跎。"
+        ];
+
+        // 获取随机本地情话
+        function getRandomLocalQuote() {
+            return localLoveMessages[Math.floor(Math.random() * localLoveMessages.length)];
+        }
+
+        // 显示情话到页面
+        function displayQuote(text) {
+            const quoteEl = document.getElementById('quoteContent');
+            if (quoteEl) {
+                quoteEl.textContent = text;
+            }
+        }
+
+        // 显示加载中
+        function setLoading() {
+            const quoteEl = document.getElementById('quoteContent');
+            if (quoteEl) quoteEl.textContent = '✨ 采撷一句甜甜的话... ✨';
+        }
+
+        // 从多个 API 获取情话（优先使用联网接口）
+        async function fetchLoveQuote() {
+            // 备用 API 列表（支持跨域或 jsonp 友好的接口）
+            const apis = [
+                // 1. 一言 API (hitokoto) - 类型选择爱情
+                { url: 'https://v1.hitokoto.cn/?c=i', type: 'json', parser: (data) => data.hitokoto },
+                // 2. 一个支持情话的接口 (lovelive.tools)
+                { url: 'https://api.lovelive.tools/api/SweetNothings', type: 'text', parser: (data) => data },
+                // 3. 备用：情话接口 shadiao.app
+                { url: 'https://api.shadiao.app/api.php?type=情话&format=json', type: 'json', parser: (data) => data.data.text }
+            ];
+
+            for (const api of apis) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒超时
+                    const response = await fetch(api.url, { signal: controller.signal });
+                    clearTimeout(timeoutId);
+                    if (!response.ok) continue;
+                    
+                    let result;
+                    if (api.type === 'json') {
+                        result = await response.json();
+                        const quote = api.parser(result);
+                        if (quote && typeof quote === 'string' && quote.trim().length > 0) {
+                            return quote.trim();
+                        }
+                    } else if (api.type === 'text') {
+                        result = await response.text();
+                        if (result && result.trim().length > 0) {
+                            return result.trim();
+                        }
+                    }
+                } catch (err) {
+                    console.warn(`API ${api.url} 请求失败:`, err);
+                    continue;
+                }
+            }
+            // 所有API都失败，返回本地随机情话
+            return getRandomLocalQuote();
+        }
+
+        // 刷新情话（同时更新到页面）
+        async function refreshQuote() {
+            setLoading();
+            try {
+                const quote = await fetchLoveQuote();
+                displayQuote(quote);
+            } catch (error) {
+                console.error("获取情话出错，使用本地库", error);
+                displayQuote(getRandomLocalQuote());
+            }
+        }
+
+        // 页面加载时获取一次情话
+        refreshQuote();
+
+        // 绑定刷新按钮事件
+        const refreshBtn = document.getElementById('refreshQuoteBtn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                refreshQuote();
+            });
+        }
+
+        // ======================= 浮动文字 (保持不变) =======================
         const messages = [
             "🔥 火鸡面不准把辣椒全放", "🍋 冷冷的柠檬水慢点喝", "💖 亲亲小黎宝宝",
             "💤 早点休息", "🍵 红糖姜茶", "✨ 抱抱宝宝", "🌼 温柔待己", "🧘‍♀️ 深呼吸",
@@ -355,8 +605,7 @@
         }
         startFloating();
 
-        // ======================= 随机配音播放器 (侧边悬浮，无曲目标识，自动连续随机) =======================
-        // MP3 列表（共11个）
+        // ======================= 随机配音播放器 (侧边悬浮，完全保留原有逻辑) =======================
         const audioList = [
             "https://game.gtimg.cn/images/yxzj/zlkdatasys/audios/audio/20240127/17063316715338.mp3",
             "https://game.gtimg.cn/images/yxzj/zlkdatasys/audios/audio/20220415/16499933313223.mp3",
@@ -371,24 +620,21 @@
             "https://game.gtimg.cn/images/yxzj/zlkdatasys/audios/audio/20250522/17478979541811.mp3"
         ];
 
-        let currentAudio = null;        // 当前音频实例
-        let isPlaying = false;           // 播放状态
-        let currentIndex = -1;           // 当前播放的音频索引
-        let autoPlayAttempted = false;    // 是否已尝试自动播放
+        let currentAudio = null;
+        let isPlaying = false;
+        let currentIndex = -1;
+        let autoPlayAttempted = false;
 
-        // 获取随机索引（不与当前相同，但若只有一首则相同也无妨）
         function getRandomIndex() {
             if (audioList.length === 0) return -1;
             if (audioList.length === 1) return 0;
             let newIdx = Math.floor(Math.random() * audioList.length);
-            // 避免连续相同，但无所谓，完全随机也可以
             if (newIdx === currentIndex && audioList.length > 1) {
                 newIdx = (newIdx + 1) % audioList.length;
             }
             return newIdx;
         }
 
-        // 更新按钮外观：播放状态脉冲光晕 + 图标变化
         function updateButtonAppearance() {
             const btn = document.getElementById('musicFloatBtn');
             const iconSpan = document.getElementById('musicIcon');
@@ -402,106 +648,72 @@
             }
         }
 
-        // 停止当前播放并清理事件 (不重置播放状态标记)
-        function stopCurrentAndClean() {
-            if (currentAudio) {
-                currentAudio.pause();
-                currentAudio.onended = null;
-                currentAudio.onerror = null;
-                // 不立即撤销引用，后续会新建
-            }
-        }
-
-        // 播放指定索引的音频 (不改变isPlaying状态，但调用play后会根据结果调整)
-        function playAudioByIndex(index, autoTrigger = false) {
+        function playAudioByIndex(index) {
             if (!audioList.length || index < 0 || index >= audioList.length) return false;
-            
-            // 停止现有
             if (currentAudio) {
                 currentAudio.pause();
                 currentAudio.onended = null;
                 currentAudio.onerror = null;
             }
-            
             const newAudio = new Audio();
             newAudio.src = audioList[index];
             newAudio.preload = "auto";
-            
-            // 播放结束自动随机下一首
             newAudio.onended = () => {
-                // 只有当前处于播放状态才自动下一首（防止暂停后意外触发）
                 if (isPlaying) {
                     const nextIdx = getRandomIndex();
                     currentIndex = nextIdx;
-                    playAudioByIndex(currentIndex, true);
+                    playAudioByIndex(currentIndex);
                 }
             };
-            
-            // 错误处理：静默跳过，换下一首 (不显示任何文字)
             newAudio.onerror = () => {
-                // 如果播放时出错，且仍在播放状态，则自动切换到另一首
                 if (isPlaying) {
                     const fallbackIdx = getRandomIndex();
                     currentIndex = fallbackIdx;
-                    playAudioByIndex(currentIndex, true);
+                    playAudioByIndex(currentIndex);
                 } else {
-                    // 非播放状态出现错误，重置标记
                     isPlaying = false;
                     updateButtonAppearance();
                 }
             };
-            
             currentAudio = newAudio;
             currentIndex = index;
-            
-            // 尝试播放
             const playPromise = currentAudio.play();
             if (playPromise !== undefined) {
                 playPromise.then(() => {
                     isPlaying = true;
                     updateButtonAppearance();
-                }).catch(err => {
-                    // 自动播放被阻止，不显示任何提示，等待用户点击按钮
+                }).catch(() => {
                     isPlaying = false;
                     updateButtonAppearance();
-                    // 如果是因为自动播放策略，不做额外动作；但需要保证下次点击按钮能恢复播放
                 });
             } else {
-                // 兼容旧浏览器
                 currentAudio.play();
                 isPlaying = true;
                 updateButtonAppearance();
             }
             return true;
         }
-        
-        // 开始随机播放（全新随机）
+
         function startRandomPlay() {
             if (!audioList.length) return;
             const idx = getRandomIndex();
             currentIndex = idx;
             playAudioByIndex(currentIndex);
         }
-        
-        // 切换播放/暂停
+
         function togglePlayPause() {
             if (!audioList.length) return;
-            
-            // 如果没有当前音频实例或从未播放过，则全新随机播放
             if (!currentAudio || currentIndex === -1) {
                 startRandomPlay();
                 return;
             }
-            
             if (isPlaying) {
-                // 暂停
                 if (currentAudio) {
                     currentAudio.pause();
                     isPlaying = false;
                     updateButtonAppearance();
                 }
             } else {
-                // 继续播放当前音频
                 if (currentAudio) {
                     const playPromise = currentAudio.play();
                     if (playPromise !== undefined) {
@@ -509,14 +721,12 @@
                             isPlaying = true;
                             updateButtonAppearance();
                         }).catch(() => {
-                            // 播放失败尝试重新加载
                             if (currentAudio.src) {
                                 currentAudio.load();
                                 currentAudio.play().then(() => {
                                     isPlaying = true;
                                     updateButtonAppearance();
                                 }).catch(() => {
-                                    // 实在无法播放，重置为新随机
                                     startRandomPlay();
                                 });
                             } else {
@@ -533,8 +743,7 @@
                 }
             }
         }
-        
-        // 页面启动时尝试自动播放 (静默，如果被阻止，按钮保持待播放状态，但无任何文字提示)
+
         function attemptAutoPlay() {
             if (autoPlayAttempted) return;
             autoPlayAttempted = true;
@@ -547,9 +756,7 @@
             const playTest = testAudio.play();
             if (playTest !== undefined) {
                 playTest.then(() => {
-                    // 自动播放成功
                     if (currentAudio) {
-                        // 清理旧的测试对象
                         testAudio.pause();
                         testAudio.onended = null;
                     }
@@ -557,37 +764,32 @@
                     currentIndex = initIdx;
                     isPlaying = true;
                     updateButtonAppearance();
-                    // 绑定结束事件
                     currentAudio.onended = () => {
                         if (isPlaying) {
                             const nextIdx = getRandomIndex();
                             currentIndex = nextIdx;
-                            playAudioByIndex(currentIndex, true);
+                            playAudioByIndex(currentIndex);
                         }
                     };
                     currentAudio.onerror = () => {
                         if (isPlaying) {
                             const nextIdx = getRandomIndex();
                             currentIndex = nextIdx;
-                            playAudioByIndex(currentIndex, true);
+                            playAudioByIndex(currentIndex);
                         } else {
                             isPlaying = false;
                             updateButtonAppearance();
                         }
                     };
                 }).catch(() => {
-                    // 自动播放被浏览器阻止，不做任何显示，按钮保持可点击状态
-                    // 清除测试对象
                     testAudio.onended = null;
                     testAudio.onerror = null;
-                    // 等待用户点击按钮即可
                     isPlaying = false;
                     currentAudio = null;
                     currentIndex = -1;
                     updateButtonAppearance();
                 });
             } else {
-                // 兼容
                 testAudio.play();
                 currentAudio = testAudio;
                 currentIndex = initIdx;
@@ -597,13 +799,12 @@
                     if (isPlaying) {
                         const nextIdx = getRandomIndex();
                         currentIndex = nextIdx;
-                        playAudioByIndex(currentIndex, true);
+                        playAudioByIndex(currentIndex);
                     }
                 };
             }
         }
-        
-        // 绑定悬浮按钮点击事件
+
         const floatBtn = document.getElementById('musicFloatBtn');
         if (floatBtn) {
             floatBtn.addEventListener('click', (e) => {
@@ -611,15 +812,11 @@
                 togglePlayPause();
             });
         }
-        
-        // 页面完全加载后尝试自动播放 (无任何提示文案)
+
         window.addEventListener('load', () => {
             attemptAutoPlay();
+            updateLoveDays();  // 确保天数显示
         });
-        
-        // 可选：如果因为用户手势限制，额外监听页面轻触辅助（但没有文字提示）
-        // 这里为了更可靠，但不需要额外弹窗。自动播放尝试如果失败，用户点按钮即可
-        // 确保视频原有的 autoplay 不影响
     </script>
 </body>
 </html>
