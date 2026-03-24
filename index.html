@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>亲亲小黎宝宝</title>
+    <title>亲亲小黎宝宝 · 暖心陪伴</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            font-family: 'Microsoft YaHei', 'Segoe UI', 'PingFang SC', sans-serif;
         }
 
         body {
@@ -130,6 +130,7 @@
             text-align: center;
             position: relative;
             z-index: 5;
+            margin-bottom: 1.5rem;
         }
 
         .video-title {
@@ -166,8 +167,49 @@
             color: #b35d7a;
         }
 
-        @media (max-width: 768px) {
-            .container { padding: 1.5rem; }
+        /* 侧边悬浮音乐按钮 - 小巧不挡内容 */
+        .music-float-btn {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #ffb7c5, #ff8aa8);
+            box-shadow: 0 6px 16px rgba(214, 51, 132, 0.35);
+            border: 2px solid rgba(255, 245, 240, 0.9);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .music-float-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(214, 51, 132, 0.45);
+        }
+
+        .music-float-btn:active {
+            transform: scale(0.96);
+        }
+
+        .music-icon-symbol {
+            font-size: 28px;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+            transition: transform 0.1s;
+        }
+
+        /* 脉冲光晕，表示正在播放 */
+        @keyframes gentlePulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 100, 130, 0.5); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 100, 130, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 100, 130, 0); }
+        }
+        .music-float-btn.playing {
+            animation: gentlePulse 1.8s infinite;
         }
 
         /* 浮动文字样式 */
@@ -203,6 +245,17 @@
             80% { opacity: 0.9; transform: translateY(-90px); }
             100% { opacity: 0; transform: translateY(-140px); }
         }
+
+        @media (max-width: 768px) {
+            .container { padding: 1.5rem; }
+            .music-float-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+            .music-icon-symbol { font-size: 24px; }
+        }
     </style>
 </head>
 <body>
@@ -214,7 +267,7 @@
         <div class="period-grid" id="periodRecords"></div>
     </div>
 
-    <!-- 本地视频区域：播放同目录下的 mmexport1774249301689.mp4 -->
+    <!-- 本地视频区域 -->
     <div class="video-section">
         <div class="video-title">✨ 亲亲小黎宝宝 ✨</div>
         <div class="video-container">
@@ -228,10 +281,15 @@
         </div>
     </div>
 
+    <!-- 侧边悬浮音乐按钮 (无文字提示，无曲目标识，仅控制播放/暂停) -->
+    <div class="music-float-btn" id="musicFloatBtn">
+        <span class="music-icon-symbol" id="musicIcon">🎵</span>
+    </div>
+
     <div class="floating-messages-container" id="floatingContainer"></div>
 
     <script>
-        // 月经数据
+        // ======================= 月经数据渲染 =======================
         const monthData = [
             { year: 2025, month: '10月', day: 5 },
             { year: 2025, month: '11月', day: 2 },
@@ -254,8 +312,9 @@
                 container.appendChild(card);
             });
         }
+        renderCards();
 
-        // 絮语文案（包含所有指定内容）
+        // ======================= 浮动文字 (不变) =======================
         const messages = [
             "🔥 火鸡面不准把辣椒全放", "🍋 冷冷的柠檬水慢点喝", "💖 亲亲小黎宝宝",
             "💤 早点休息", "🍵 红糖姜茶", "✨ 抱抱宝宝", "🌼 温柔待己", "🧘‍♀️ 深呼吸",
@@ -264,7 +323,7 @@
             "💤 早点休息", "🍵 红糖姜茶", "✨ 抱抱宝宝", "🌼 温柔待己",
             "🧘‍♀️ 深呼吸", "✨ 你最珍贵", "🥣 清淡饮食", "🌷 暖暖的", "🍬 小黎辛苦啦",
             "💕 少辣多暖", "🌸 热水袋准备好", "🕯️ 温柔入眠", "🍎 补充维C", "🌙 别熬夜",
-             "💗 亲亲抱抱"
+            "💗 亲亲抱抱"
         ];
 
         function random(min, max) {
@@ -294,9 +353,273 @@
             setInterval(() => createFloatingWord(), 1200);
             for (let i = 0; i < 5; i++) setTimeout(() => createFloatingWord(), i * 300);
         }
-
-        renderCards();
         startFloating();
+
+        // ======================= 随机配音播放器 (侧边悬浮，无曲目标识，自动连续随机) =======================
+        // MP3 列表（共11个）
+        const audioList = [
+            "https://game.gtimg.cn/images/yxzj/zlkdatasys/audios/audio/20240127/17063316715338.mp3",
+            "https://game.gtimg.cn/images/yxzj/zlkdatasys/audios/audio/20220415/16499933313223.mp3",
+            "https://game.gtimg.cn/images/yxzj/zlkdatasys/audios/audio/20220415/16499934075686.mp3",
+            "https://game.gtimg.cn/images/yxzj/zlkdatasys/audios/audio/20230216/16765280298783.mp3",
+            "https://game.gtimg.cn/images/yxzj/zlkdatasys/audios/audio/20230216/16765280678397.mp3",
+            "https://game.gtimg.cn/images/yxzj/zlkdatasys/audios/audio/20230214/16763579851837.mp3",
+            "https://game.gtimg.cn/images/yxzj/zlkdatasys/audios/audio/20230214/16763582975898.mp3",
+            "https://game.gtimg.cn/images/yxzj/zlkdatasys/audios/audio/20230214/16763581685789.mp3",
+            "https://game.gtimg.cn/images/yxzj/zlkdatasys/audios/audio/20250522/17478972001655.mp3",
+            "https://game.gtimg.cn/images/yxzj/zlkdatasys/audios/audio/20250522/17478977336509.mp3",
+            "https://game.gtimg.cn/images/yxzj/zlkdatasys/audios/audio/20250522/17478979541811.mp3"
+        ];
+
+        let currentAudio = null;        // 当前音频实例
+        let isPlaying = false;           // 播放状态
+        let currentIndex = -1;           // 当前播放的音频索引
+        let autoPlayAttempted = false;    // 是否已尝试自动播放
+
+        // 获取随机索引（不与当前相同，但若只有一首则相同也无妨）
+        function getRandomIndex() {
+            if (audioList.length === 0) return -1;
+            if (audioList.length === 1) return 0;
+            let newIdx = Math.floor(Math.random() * audioList.length);
+            // 避免连续相同，但无所谓，完全随机也可以
+            if (newIdx === currentIndex && audioList.length > 1) {
+                newIdx = (newIdx + 1) % audioList.length;
+            }
+            return newIdx;
+        }
+
+        // 更新按钮外观：播放状态脉冲光晕 + 图标变化
+        function updateButtonAppearance() {
+            const btn = document.getElementById('musicFloatBtn');
+            const iconSpan = document.getElementById('musicIcon');
+            if (!btn) return;
+            if (isPlaying) {
+                btn.classList.add('playing');
+                if (iconSpan) iconSpan.textContent = '🎵';
+            } else {
+                btn.classList.remove('playing');
+                if (iconSpan) iconSpan.textContent = '🎵';
+            }
+        }
+
+        // 停止当前播放并清理事件 (不重置播放状态标记)
+        function stopCurrentAndClean() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.onended = null;
+                currentAudio.onerror = null;
+                // 不立即撤销引用，后续会新建
+            }
+        }
+
+        // 播放指定索引的音频 (不改变isPlaying状态，但调用play后会根据结果调整)
+        function playAudioByIndex(index, autoTrigger = false) {
+            if (!audioList.length || index < 0 || index >= audioList.length) return false;
+            
+            // 停止现有
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.onended = null;
+                currentAudio.onerror = null;
+            }
+            
+            const newAudio = new Audio();
+            newAudio.src = audioList[index];
+            newAudio.preload = "auto";
+            
+            // 播放结束自动随机下一首
+            newAudio.onended = () => {
+                // 只有当前处于播放状态才自动下一首（防止暂停后意外触发）
+                if (isPlaying) {
+                    const nextIdx = getRandomIndex();
+                    currentIndex = nextIdx;
+                    playAudioByIndex(currentIndex, true);
+                }
+            };
+            
+            // 错误处理：静默跳过，换下一首 (不显示任何文字)
+            newAudio.onerror = () => {
+                // 如果播放时出错，且仍在播放状态，则自动切换到另一首
+                if (isPlaying) {
+                    const fallbackIdx = getRandomIndex();
+                    currentIndex = fallbackIdx;
+                    playAudioByIndex(currentIndex, true);
+                } else {
+                    // 非播放状态出现错误，重置标记
+                    isPlaying = false;
+                    updateButtonAppearance();
+                }
+            };
+            
+            currentAudio = newAudio;
+            currentIndex = index;
+            
+            // 尝试播放
+            const playPromise = currentAudio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    isPlaying = true;
+                    updateButtonAppearance();
+                }).catch(err => {
+                    // 自动播放被阻止，不显示任何提示，等待用户点击按钮
+                    isPlaying = false;
+                    updateButtonAppearance();
+                    // 如果是因为自动播放策略，不做额外动作；但需要保证下次点击按钮能恢复播放
+                });
+            } else {
+                // 兼容旧浏览器
+                currentAudio.play();
+                isPlaying = true;
+                updateButtonAppearance();
+            }
+            return true;
+        }
+        
+        // 开始随机播放（全新随机）
+        function startRandomPlay() {
+            if (!audioList.length) return;
+            const idx = getRandomIndex();
+            currentIndex = idx;
+            playAudioByIndex(currentIndex);
+        }
+        
+        // 切换播放/暂停
+        function togglePlayPause() {
+            if (!audioList.length) return;
+            
+            // 如果没有当前音频实例或从未播放过，则全新随机播放
+            if (!currentAudio || currentIndex === -1) {
+                startRandomPlay();
+                return;
+            }
+            
+            if (isPlaying) {
+                // 暂停
+                if (currentAudio) {
+                    currentAudio.pause();
+                    isPlaying = false;
+                    updateButtonAppearance();
+                }
+            } else {
+                // 继续播放当前音频
+                if (currentAudio) {
+                    const playPromise = currentAudio.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            isPlaying = true;
+                            updateButtonAppearance();
+                        }).catch(() => {
+                            // 播放失败尝试重新加载
+                            if (currentAudio.src) {
+                                currentAudio.load();
+                                currentAudio.play().then(() => {
+                                    isPlaying = true;
+                                    updateButtonAppearance();
+                                }).catch(() => {
+                                    // 实在无法播放，重置为新随机
+                                    startRandomPlay();
+                                });
+                            } else {
+                                startRandomPlay();
+                            }
+                        });
+                    } else {
+                        currentAudio.play();
+                        isPlaying = true;
+                        updateButtonAppearance();
+                    }
+                } else {
+                    startRandomPlay();
+                }
+            }
+        }
+        
+        // 页面启动时尝试自动播放 (静默，如果被阻止，按钮保持待播放状态，但无任何文字提示)
+        function attemptAutoPlay() {
+            if (autoPlayAttempted) return;
+            autoPlayAttempted = true;
+            if (!audioList.length) return;
+            const initIdx = getRandomIndex();
+            currentIndex = initIdx;
+            const testAudio = new Audio();
+            testAudio.src = audioList[initIdx];
+            testAudio.preload = "auto";
+            const playTest = testAudio.play();
+            if (playTest !== undefined) {
+                playTest.then(() => {
+                    // 自动播放成功
+                    if (currentAudio) {
+                        // 清理旧的测试对象
+                        testAudio.pause();
+                        testAudio.onended = null;
+                    }
+                    currentAudio = testAudio;
+                    currentIndex = initIdx;
+                    isPlaying = true;
+                    updateButtonAppearance();
+                    // 绑定结束事件
+                    currentAudio.onended = () => {
+                        if (isPlaying) {
+                            const nextIdx = getRandomIndex();
+                            currentIndex = nextIdx;
+                            playAudioByIndex(currentIndex, true);
+                        }
+                    };
+                    currentAudio.onerror = () => {
+                        if (isPlaying) {
+                            const nextIdx = getRandomIndex();
+                            currentIndex = nextIdx;
+                            playAudioByIndex(currentIndex, true);
+                        } else {
+                            isPlaying = false;
+                            updateButtonAppearance();
+                        }
+                    };
+                }).catch(() => {
+                    // 自动播放被浏览器阻止，不做任何显示，按钮保持可点击状态
+                    // 清除测试对象
+                    testAudio.onended = null;
+                    testAudio.onerror = null;
+                    // 等待用户点击按钮即可
+                    isPlaying = false;
+                    currentAudio = null;
+                    currentIndex = -1;
+                    updateButtonAppearance();
+                });
+            } else {
+                // 兼容
+                testAudio.play();
+                currentAudio = testAudio;
+                currentIndex = initIdx;
+                isPlaying = true;
+                updateButtonAppearance();
+                currentAudio.onended = () => {
+                    if (isPlaying) {
+                        const nextIdx = getRandomIndex();
+                        currentIndex = nextIdx;
+                        playAudioByIndex(currentIndex, true);
+                    }
+                };
+            }
+        }
+        
+        // 绑定悬浮按钮点击事件
+        const floatBtn = document.getElementById('musicFloatBtn');
+        if (floatBtn) {
+            floatBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                togglePlayPause();
+            });
+        }
+        
+        // 页面完全加载后尝试自动播放 (无任何提示文案)
+        window.addEventListener('load', () => {
+            attemptAutoPlay();
+        });
+        
+        // 可选：如果因为用户手势限制，额外监听页面轻触辅助（但没有文字提示）
+        // 这里为了更可靠，但不需要额外弹窗。自动播放尝试如果失败，用户点按钮即可
+        // 确保视频原有的 autoplay 不影响
     </script>
 </body>
 </html>
